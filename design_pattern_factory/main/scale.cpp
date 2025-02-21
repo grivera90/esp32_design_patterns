@@ -56,8 +56,6 @@ static void mock_delay_us(uint32_t us)
 ******************************************************************************/
 scale::scale(adc_chip chip)
 {
-	// scale_drv_factory scale_factory;
-	
 	switch(chip)
 	{
 		case adc_chip::HX710A:
@@ -70,7 +68,6 @@ scale::scale(adc_chip chip)
 				.gain = 128
 			};
 			
-		 	// adc_driver = scale_factory.create(chip, &hx710a_config);
 		 	adc_driver = scale_drv_factory::create(chip, &hx710a_config);
 	}
 }
