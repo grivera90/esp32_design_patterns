@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+design_pattern_factory/.settings/
+design_pattern_factory/build/
