@@ -27,19 +27,32 @@
 typedef enum
 {
 	AS3020_OK = 0,
-	AS320_ERROR
+	AS3020_ERROR
 } as3020_ret_t;
 
 typedef enum
 {
-	AS3020_MANUAL_MODE = 0,
-	AS3020_CONTINUOUS_MODE,
+	AS3020_BATCH_MODE = 0,
+	AS3020_TRIGGER_MODE,
 	AS3020_SENSING_MODE,
+	AS3020_CONTINUOUS_MODE,
 	AS3020_COMMAND_MODE,
-	AS3020_POS_MODE,
 	AS3020_MAX_MODES
 	
-} as3020_mode_t;
+} as3020_reading_mode_t;
+
+/**
+ * @brief List of commands implemented.
+ *		In the future would be good to implement the 
+ *		complete list of command in a typdef enum.
+ *		For now just a #define is used.
+ */
+ 
+typedef enum
+ {
+	S_CMD_020F = 23,
+	
+ } as3020_cmd_t;
 
 typedef uint8_t (*uart_xmit_t)(uint8_t *data, uint16_t data_size);
 typedef uint8_t (*uart_recv_t)(uint8_t *data, uint16_t data_size);
@@ -53,6 +66,7 @@ typedef struct
 	gpio_out_t buzzer;
 	gpio_out_t led;
 	gpio_in_t trigger;
+	gpio_in_t reset;
 	
 } as3020_t;
 /******************************************************************************
@@ -62,8 +76,7 @@ typedef struct
 extern "C" {
 #endif
 
-as3020_ret_t as3020_drv_init(as3020_t *as3020);
-as3020_ret_t as3020_get_code(void *params);
+as3020_ret_t as3020_init(as3020_t *as3020);
 
 #ifdef __cplusplus
 } // extern "C"
