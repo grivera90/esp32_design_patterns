@@ -20,7 +20,7 @@
 /******************************************************************************
         Constants
 ******************************************************************************/
-
+#define BUFFER_RECV_SIZE_MAX			(256)
 /******************************************************************************
         Data types
 ******************************************************************************/
@@ -47,7 +47,6 @@ typedef enum
  *		complete list of command in a typdef enum.
  *		For now just a #define is used.
  */
- 
 typedef enum
  {
 	S_CMD_020F = 23,
@@ -58,6 +57,21 @@ typedef uint8_t (*uart_xmit_t)(uint8_t *data, uint16_t data_size);
 typedef uint8_t (*uart_recv_t)(uint8_t *data, uint16_t data_size);
 typedef void (*gpio_out_t)(uint8_t value);
 typedef uint8_t (*gpio_in_t)(void);
+
+/**
+ * @brief struct to represent data format of as3020 module.
+ */
+typedef struct
+{
+	uint8_t stx;
+	uint8_t fid;
+	uint16_t len;
+	uint8_t *cmd;
+	uint8_t *data;
+	uint8_t bcc;
+	uint8_t etx;
+	
+} as3020_data_format_t;
 
 typedef struct
 {
@@ -76,7 +90,26 @@ typedef struct
 extern "C" {
 #endif
 
+/**
+ * @brief Function to init as3020 module barcode scanner. 
+ * @param as3020_t *as3020: pointer to struct. Please see typedef section. 
+ * @return as3020_ret_t: See \p as3020_ret_t return codes.
+ */
 as3020_ret_t as3020_init(as3020_t *as3020);
+
+/**
+ * @brief Function to send command to AS3020 module. 
+ * @param as3020_data_format_t *cmd: pointer to data format. Please see typedef section. 
+ * @return as3020_ret_t: See \p as3020_ret_t return codes.
+ */
+as3020_ret_t as3020_send_cmd(as3020_data_format_t *cmd);
+
+/**
+ * @brief This function should be called from uart interrupt or a callback that get a received byte from uart. 
+ * @param as3020_data_format_t *cmd: pointer to data format. Please see typedef section. 
+ * @return as3020_ret_t: See \p as3020_ret_t return codes.
+ */
+as3020_ret_t as3020_scanning_code(uint8_t byte, uint8_t *code);
 
 #ifdef __cplusplus
 } // extern "C"
