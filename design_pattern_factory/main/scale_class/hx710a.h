@@ -1,24 +1,24 @@
 /**
 *******************************************************************************
-* @file           : scale_drv_factory.h
+* @file           : hx710a.h
 * @brief          : Description of header file
 * @author         : Gonzalo Rivera
 * @date           : 20/02/2025
 *******************************************************************************
 * @attention
 *
-* Copyright (c) <date> grivera. All rights reserved.
+* Copyright (c) <date> Systel S.A. All rights reserved.
 *
 */
-#ifndef __SCALE_DRV_FACTORY_H__
-#define __SCALE_DRV_FACTORY_H__
+#ifndef __HX710A_H__
+#define __HX710A_H__
 /******************************************************************************
         Includes
  ******************************************************************************/
-#include <memory>
 #include <stdint.h>
-#include "adc_interface.h"
-#include "hx710a.h"
+
+#include "hx710a_drv.h"
+#include "../adc_interface/adc_interface.h"
 /******************************************************************************
         Constants
  ******************************************************************************/
@@ -30,28 +30,21 @@
  /******************************************************************************
         Public class
  ******************************************************************************/
-enum class adc_chip 
+class hx710a : public adc_interface
 {
-    HX710A = 0,
-    ADS1232
+	private:
+		hx710a_t hx710a_conf;
+	
+	public: 
+		hx710a(hx710a_t *config)
+		{
+			hx710a_conf = *config;
+			hx710a_init(&hx710a_conf);
+		}
+		uint32_t get_count() override
+		{
+			return hx710_read(&hx710a_conf);
+		}
 };
 
-class scale_drv_factory 
-{
-	public:
-    	
-    	static std::unique_ptr<adc_interface> create(adc_chip type, hx710a_t *hx710a_config) 
-    	{	
-        	switch (type) 
-        	{
-            	case adc_chip::HX710A:
-                case adc_chip::ADS1232:
-                	return std::make_unique<hx710a>(hx710a_config);
-            	
-            	default:
-                	return nullptr;
-        	}
-    	}
-};
-
-#endif // EOF __SCALE_DRV_FACTORY_H__
+#endif // EOF __HX710A_H__

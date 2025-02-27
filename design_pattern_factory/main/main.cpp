@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "scale.h"
+#include "scale_class/scale.h"
 
 extern "C" void app_main(void)
 {
