@@ -111,6 +111,13 @@ as3020_ret_t as3020_send_cmd(as3020_data_format_t *cmd);
  */
 as3020_ret_t as3020_scanning_code(uint8_t byte, uint8_t *code);
 
+/**
+ * @brief This function does a free buffer to the new scanning. 
+ * @param uint8_t *code: pointer to buffer. 
+ * @return void.
+ */
+void as3020_buffer_free(uint8_t *code);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -146,3 +146,7 @@ as3020_ret_t as3020_scanning_code(uint8_t byte, uint8_t *code)
 	return AS3020_ERROR;
 }
 
+void as3020_buffer_free(uint8_t *code)
+{
+	free(code);
+}
