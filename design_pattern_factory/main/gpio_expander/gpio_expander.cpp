@@ -38,11 +38,29 @@ static int mock_i2c_read_byte(uint8_t slave_addr, uint8_t reg_addr, uint8_t *reg
 /******************************************************************************
     Local function definitions
 ******************************************************************************/
+/**
+ * @brief This configuration is to TCA9554 gpio expander.
+ *
+ * @note M = Master S = Slave 
+ * _______________________________________________________________________________________________
+ * | start | slave_addr + wr_bit + | ack | register_addr + | ack  | register_value  | ack  | stop |
+ * ----M---|------------M----------|--S--|--------M--------|--S---|--------M--------|--S---|--M---|
+ *
+ */
 static int mock_i2c_write_byte(uint8_t dev_address, uint8_t reg_address, uint8_t reg_value)
 {
 	return 0;
 }
 
+/**
+ * @brief This configuration is to TCA9554 gpio expander.
+ *
+ * @note M = Master S = Slave 
+ * ________________________________________________________________________________________________________________________________
+ * | start | slave_addr + wr_bit | ack | register_addr | ack  | re_start | slave_addr + rd_bit| ack | register_value | nack | stop |
+ * ----M---|------------M--------|--S--|--------M------|--S---|----M-----|----------M---------|--S--|--------S-------|---M--|--M---|
+ *
+ */
 static int mock_i2c_read_byte(uint8_t slave_addr, uint8_t reg_addr, uint8_t *reg_value)
 {
 	return 0;
