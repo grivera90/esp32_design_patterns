@@ -42,13 +42,13 @@ class gpio_expander_drv_factory
 {
 	public:
     	
-    	static std::unique_ptr<gpio_expander_interface> create(gpio_expander_chip chip, tca9554_t *tca9554) 
+    	static std::unique_ptr<gpio_expander_interface> create(gpio_expander_chip chip, tca9554_t *tca9554_conf) 
     	{	
         	switch (chip) 
         	{
             	case gpio_expander_chip::TCA9554:
             	case gpio_expander_chip::TCA9554A:
-                	return std::make_unique<tca9554>(tca9554);
+                	return std::make_unique<tca9554>(tca9554_conf);
             	
             	default:
                 	return nullptr;

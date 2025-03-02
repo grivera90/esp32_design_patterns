@@ -23,7 +23,7 @@
 /******************************************************************************
         Data types
  ******************************************************************************/
- 
+
  /******************************************************************************
         Public class
  ******************************************************************************/
@@ -31,7 +31,11 @@ class gpio_expander_interface
 {
 	public:
 		virtual ~gpio_expander_interface() = default;
-		virtual uint32_t get_count() = 0;
+		
+		virtual void write_port(uint8_t port, uint8_t gpio) = 0;
+		virtual uint8_t read_port(uint8_t port) = 0;
+		virtual void gpio_write(uint8_t port, uint8_t gpio, uint8_t value) = 0;
+		virtual uint8_t gpio_read(uint8_t port, uint8_t gpio) = 0;
 };
 
 #endif // EOF __GPIO_EXPANDER_INTERFACE_H__
