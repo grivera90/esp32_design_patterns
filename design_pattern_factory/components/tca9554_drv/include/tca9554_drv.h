@@ -16,10 +16,13 @@
         Includes
  ******************************************************************************/
 #include <stdint.h>
+#include <stdbool.h>
 /******************************************************************************
         Constants
  ******************************************************************************/
-#define TCA9554_DEFAULT_ADDRESS				(0x27)
+#define TCA9554_SLAVE_ADDRESS_FIXED			(0x40)
+#define TCA9554_WRITE_OPERATION				(0x00)
+#define TCA9554_READ_OPERATION				(0x01)
 /******************************************************************************
         Data types
  ******************************************************************************/
@@ -45,7 +48,9 @@ typedef enum
 
 typedef enum
 {
-	PORT0 = 0
+	PORT0 = 0,
+	PORT_MAX
+	
 } tca9554_ports_t;
 
 typedef enum
@@ -83,6 +88,7 @@ typedef struct
     uint8_t b5:1;
     uint8_t b6:1;
     uint8_t b7:1;
+    
 } bits_t;
 
 /**
@@ -110,8 +116,8 @@ typedef struct
 	tca9554_register_t polarity_register;
 	tca9554_register_t config_register;
 	
-	int (*i2c_write_byte)(uint8_t slave_addr, uint8_t reg_addr, uint8_t reg_value);
-	int (*i2c_read_byte)(uint8_t slave_addr, uint8_t reg_addr, uint8_t *reg_value);
+	int (*i2c_master_xmit)(uint8_t slave_addr, uint8_t reg_addr, uint8_t reg_value);
+	int (*i2c_master_recv)(uint8_t slave_addr, uint8_t reg_addr, uint8_t *reg_value);
 	
 } tca9554_t;
 /******************************************************************************
@@ -121,11 +127,15 @@ typedef struct
 extern "C" {
 #endif
 
-tca9554_ret_t tca9554_init(tca9554_t *tca9554, tca9554_address_t chip_address);
+tca9554_ret_t tca9554_init(tca9554_t *tca9554, tca9554_address_t chip_address, bool default_conf);
 tca9554_ret_t tca9554_write_reg(tca9554_t *tca9554, tca9554_reg_address_t reg_address, uint8_t reg_value);
 tca9554_ret_t tca9554_read_reg(tca9554_t *tca9554, tca9554_reg_address_t reg_address, uint8_t *reg_value);
-tca9554_ret_t tca9554_write_bit(tca9554_t *tca9554, tca9554_gpio_t gpio, uint8_t gpio_value);
-tca9554_ret_t tca9554_read_bit(tca9554_t *tca9554, tca9554_gpio_t gpio, uint8_t *gpio_value);
+tca9554_ret_t tca9554_port_write(tca9554_t *tca9554, uint8_t port_value);
+tca9554_ret_t tca9554_port_read(tca9554_t *tca9554, uint8_t *port_value);
+tca9554_ret_t tca9554_port_write_polarity(tca9554_t *tca9554, uint8_t pol_value);
+tca9554_ret_t tca9554_port_read_polarity(tca9554_t *tca9554, uint8_t *pol_value);
+tca9554_ret_t tca9554_pin_write(tca9554_t *tca9554, tca9554_gpio_t gpio, bool gpio_value);
+tca9554_ret_t tca9554_pin_read(tca9554_t *tca9554, tca9554_gpio_t gpio, bool *gpio_value);
 
 #ifdef __cplusplus
 } // extern "C"

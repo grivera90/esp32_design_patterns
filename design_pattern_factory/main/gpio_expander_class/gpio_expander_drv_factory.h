@@ -18,8 +18,8 @@
 #include <memory>
 #include <stdint.h>
 
+#include "../gpio_expander_class/tca9554.h"
 #include "../gpio_expander_interface/gpio_expander_interface.h"
-#include "tca9554.h"
 #include "tca9554_drv.h"
 /******************************************************************************
         Constants

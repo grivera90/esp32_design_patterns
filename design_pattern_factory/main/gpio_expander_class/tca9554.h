@@ -1,25 +1,24 @@
 /**
 *******************************************************************************
-* @file           : gpio_expander.h
+* @file           : tca9554.h
 * @brief          : Description of header file
 * @author         : Gonzalo Rivera
-* @date           : 28/02/2025
+* @date           : 20/02/2025
 *******************************************************************************
 * @attention
 *
-* Copyright (c) <date> grivera. All rights reserved.
+* Copyright (c) <date> Systel S.A. All rights reserved.
 *
 */
-#ifndef __GPIO_EXPANDER_H__
-#define __GPIO_EXPANDER_H__
+#ifndef __TCA9554_H__
+#define __TCA9554_H__
 /******************************************************************************
         Includes
  ******************************************************************************/
 #include <stdint.h>
-#include <vector>
 
-#include "gpio_expander_drv_factory.h"
 #include "tca9554_drv.h"
+#include "../gpio_expander_interface/gpio_expander_interface.h"
 /******************************************************************************
         Constants
  ******************************************************************************/
@@ -27,41 +26,41 @@
 /******************************************************************************
         Data types
  ******************************************************************************/
-typedef struct
-{
-	uint8_t port;
-	uint8_t gpio;
-} port_t;
+ 
  /******************************************************************************
         Public class
  ******************************************************************************/
-class gpio_expander
+class tca9554 : public gpio_expander_interface
 {
-	public:
-		gpio_expander(gpio_expander_chip chip, uint8_t address);
-		~gpio_expander();
-		
-		void set_address(uint8_t address);
-		uint8_t get_address();
-		
-		std::vector<port_t> get_available_ports();
-		
-		void set_all_output(void);
-		void set_all_input(void);
-		void set_gpio_output(uint8_t port, uint8_t gpio);
-		void set_gpio_input(uint8_t port, uint8_t gpio);
-		
-		std::vector<port_t> read_all_ports();
-		void write_all_ports(std::vector<port_t> p);
-		
-		bool gpio_read(uint8_t port, uint8_t gpio);
-		void gpio_write(uint8_t port, uint8_t gpio, bool value);
-		
 	private:
-		uint8_t chip_address;
-		std::vector<port_t> ports;
-		std::unique_ptr<gpio_expander_interface> gpio_expander_driver;
+		tca9554_t tca9554_conf;
+	
+	public: 
+		tca9554(tca9554_t *config)
+		{
+			tca9554_conf = *config;
+			tca9554_init(&tca9554_conf, tca9554_conf.slave_address, false);
+		}
+		
+		void write_port(uint8_t port, uint8_t gpio) override
+		{
+			
+		}
+		
+		uint8_t read_port(uint8_t port) override
+		{
+			return 0;
+		}
+		
+		void gpio_write(uint8_t port, uint8_t gpio, uint8_t value) override
+		{
+			
+		}
+		
+		uint8_t gpio_read(uint8_t port, uint8_t gpio) override
+		{
+			return 0;
+		}
 };
 
-#endif // EOF __GPIO_EXPANDER_H__
-
+#endif // EOF __HX710A_H__

@@ -88,8 +88,8 @@ gpio_expander::gpio_expander(gpio_expander_chip chip, uint8_t address)
 				.polarity_register{ .set {.all = 0x00}},
 				.config_register{ .set {.all = 0x00}},
 				
-				.i2c_write_byte = mock_i2c_write_byte,
-				.i2c_read_byte = mock_i2c_read_byte
+				.i2c_master_xmit = mock_i2c_write_byte,
+				.i2c_master_recv = mock_i2c_read_byte
 			};
 			
 		 	gpio_expander_driver = gpio_expander_drv_factory::create(chip, &tca9554_config);
