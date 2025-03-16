@@ -5,6 +5,7 @@ idf_component_register(
 	# list the source files of this component
     SRCS 				main.cpp 
     					scale_class/scale.cpp
+    					gpio_expander/gpio_expander.cpp
     					         
     INCLUDE_DIRS        # optional, add here public include directories
     PRIV_INCLUDE_DIRS   # optional, add here private include directories

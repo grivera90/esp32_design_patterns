@@ -16,10 +16,13 @@
         Includes
  ******************************************************************************/
 #include <stdint.h>
+#include <stdbool.h>
 /******************************************************************************
         Constants
  ******************************************************************************/
-#define TCA9554_ADDRESS				(0x27)
+#define TCA9554_SLAVE_ADDRESS_FIXED			(0x40)
+#define TCA9554_WRITE_OPERATION				(0x00)
+#define TCA9554_READ_OPERATION				(0x01)
 /******************************************************************************
         Data types
  ******************************************************************************/
@@ -29,6 +32,26 @@ typedef enum
 	TCA9554_ERROR
 	
 } tca9554_ret_t;
+
+typedef enum
+{
+	ADDRESS_20H = 0X20,
+	ADDRESS_21H,
+	ADDRESS_22H,
+	ADDRESS_23H,
+	ADDRESS_24H,
+	ADDRESS_25H,
+	ADDRESS_26H,
+	ADDRESS_27H
+	
+} tca9554_address_t;
+
+typedef enum
+{
+	PORT0 = 0,
+	PORT_MAX
+	
+} tca9554_ports_t;
 
 typedef enum
 {
@@ -50,7 +73,8 @@ typedef enum
 	TCA9554_POLARITY_REG,			// Polarity inversion register. BIT '1' inverts input polarity of register 0x00.
 	TCA9554_CONFIG_REG				// Configuration register. BIT = '1' sets port to input BIT = '0' sets port to output.
 	
-} register_address_t;
+} tca9554_reg_address_t;
+
 /**
  * @brief this typedef represent the bits in a register. 
  */
@@ -64,6 +88,7 @@ typedef struct
     uint8_t b5:1;
     uint8_t b6:1;
     uint8_t b7:1;
+    
 } bits_t;
 
 /**
@@ -77,22 +102,22 @@ typedef struct
 	    bits_t bit;
 	} set;
 	    
-} register_t;
+} tca9554_register_t;
 
 /**
  * @brief tca9554 device.  
  */
 typedef struct
 {
-	uint8_t slave_address;
+	tca9554_address_t slave_address;
 	
-	register_t input_register;
-	register_t output_register;
-	register_t polarity_register;
-	register_t config_register;
+	tca9554_register_t input_register;
+	tca9554_register_t output_register;
+	tca9554_register_t polarity_register;
+	tca9554_register_t config_register;
 	
-	int (*i2c_write_byte)(uint8_t slave_addr, uint8_t reg_addr, uint8_t reg_value);
-	int (*i2c_read_byte)(uint8_t slave_addr, uint8_t reg_addr, uint8_t *reg_value);
+	int (*i2c_master_xmit)(uint8_t slave_addr, uint8_t reg_addr, uint8_t reg_value);
+	int (*i2c_master_recv)(uint8_t slave_addr, uint8_t reg_addr, uint8_t *reg_value);
 	
 } tca9554_t;
 /******************************************************************************
@@ -102,11 +127,100 @@ typedef struct
 extern "C" {
 #endif
 
-tca9554_ret_t tca9554_init(tca9554_t *tca9554, uint8_t address);
-tca9554_ret_t tca9554_write_reg(tca9554_t *tca9554, register_address_t reg_address, uint8_t reg_value);
-tca9554_ret_t tca9554_read_reg(tca9554_t *tca9554, register_address_t reg_address, uint8_t *reg_value);
-tca9554_ret_t tca9554_write_bit(tca9554_t *tca9554, tca9554_gpio_t gpio, uint8_t gpio_value);
-tca9554_ret_t tca9554_read_bit(tca9554_t *tca9554, tca9554_gpio_t gpio, uint8_t *gpio_value);
+/**
+ * @brief Function to initializate and configurate tca9554 chip.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param tca9554_address_t chip_address: address slave. 
+ * @param bool default_conf: indicate if a default config is set or a particular config. Default = true, Particular = false.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_init(tca9554_t *tca9554, tca9554_address_t chip_address, bool default_conf);
+
+/**
+ * @brief Function to write in a register of tca9554.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param tca9554_reg_address_t tca9554_reg_address: register address. 
+ * @param uint8_t reg_value: value to will be write in the register.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_write_reg(tca9554_t *tca9554, tca9554_reg_address_t reg_address, uint8_t reg_value);
+
+/**
+ * @brief Function to read a register of tca9554.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param tca9554_reg_address_t tca9554_reg_address: register address. 
+ * @param uint8_t *reg_value: pointer to storage the value of the register.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_read_reg(tca9554_t *tca9554, tca9554_reg_address_t reg_address, uint8_t *reg_value);
+
+/**
+ * @brief Function to write a value in the port of tca9554.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param uint8_t port_value: value to will be write in the port.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_port_write(tca9554_t *tca9554, uint8_t port_value);
+
+/**
+ * @brief Function to read the value of tca9554 port.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param uint8_t *port_value: pointer to storage the value of the port.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_port_read(tca9554_t *tca9554, uint8_t *port_value);
+
+/**
+ * @brief Function to write a value in the polarity register of tca9554.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param uint8_t pol_value: value to will be write in the polarity register.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_port_write_polarity(tca9554_t *tca9554, uint8_t pol_value);
+
+/**
+ * @brief Function to read the value of tca9554 polarity register.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param uint8_t *pol_value: pointer to storage the value of the polarity register.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_port_read_polarity(tca9554_t *tca9554, uint8_t *pol_value);
+
+/**
+ * @brief Function to write a pin state of tca9554 output port.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param tca9554_gpio_t gpio: gpio number. 
+ * @param bool gpio_value: gpio value.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_pin_write(tca9554_t *tca9554, tca9554_gpio_t gpio, bool gpio_value);
+
+/**
+ * @brief Function to read the pin state of tca9554 input port.
+ *
+ * @param tca9554_t *tca9554: pointer to device struct.
+ * @param tca9554_gpio_t gpio: gpio number. 
+ * @param bool *gpio_value: pointer to storage the value of the pin.
+ * 
+ * @return tca9554_ret_t. See \p tca9554_ret_t in Data types section.
+ */
+tca9554_ret_t tca9554_pin_read(tca9554_t *tca9554, tca9554_gpio_t gpio, bool *gpio_value);
 
 #ifdef __cplusplus
 } // extern "C"

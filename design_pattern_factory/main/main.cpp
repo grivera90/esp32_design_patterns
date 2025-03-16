@@ -2,12 +2,15 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#include "gpio_expander_class/gpio_expander_drv_factory.h"
 #include "scale_class/scale.h"
+#include "gpio_expander_class/gpio_expander.h"
 
 extern "C" void app_main(void)
 {
     
     scale primary_load_cell(adc_chip::HX710A);
+    gpio_expander gpio_exapnder_keyboard(gpio_expander_chip::TCA9554, 0x27);
     
     while (true) 
     {
