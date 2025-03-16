@@ -135,11 +135,11 @@ tca9554_ret_t tca9554_pin_write(tca9554_t *tca9554, tca9554_gpio_t gpio, bool gp
 	/* MASK */
 	if (true == gpio_value)
 	{
-		temp |= (gpio_value << gpio);
+		temp |= (1 << gpio);
 	}
 	else
 	{
-		temp &= ~(gpio_value << gpio);
+		temp &= ~(1 << gpio);
 	}
 
 	if (0 != tca9554->i2c_master_xmit(tca9554->slave_address, TCA9554_OUTPUT_REG, temp))

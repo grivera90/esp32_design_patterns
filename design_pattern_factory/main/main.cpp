@@ -2,11 +2,9 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#include "gpio_expander/gpio_expander_drv_factory.h"
+#include "gpio_expander_class/gpio_expander_drv_factory.h"
 #include "scale_class/scale.h"
-
-#include "gpio_expander/gpio_expander_drv_factory.h"
-#include "gpio_expander/gpio_expander.h"
+#include "gpio_expander_class/gpio_expander.h"
 
 extern "C" void app_main(void)
 {
